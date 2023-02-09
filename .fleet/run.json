@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "type": "command",
+            "name": "start",
+            "program": "npm",
+            "args": ["start"],
+        },
+        {
+            "type": "command",
+            "name": "build",
+            "program": "npm",
+            "args": ["run", "build"],
+        },
+
+
+    ]
+}

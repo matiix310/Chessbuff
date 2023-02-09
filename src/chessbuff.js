@@ -1,5 +1,8 @@
 import { getBestMove } from "./chessIA.js"
 
+const COLOROPP = "white"
+const COLOR = "black"
+
 
 const board = document.getElementsByTagName('cg-board')[0]
 const white = board.getElementsByClassName('white')
@@ -30,8 +33,8 @@ function onMutation(e) {
             }
 
             if (newPos.x !== oldPos.x || newPos.y !== oldPos.y) {
-                pieceMoved(oldPos, newPos, e.target.classList[1], e.target.classList[0])
                 setPos(e.target);
+                pieceMoved(oldPos, newPos, e.target.classList[1], e.target.classList[0])
             }
 
         }, 100)
@@ -57,6 +60,40 @@ function setPos(element) {
 
 function pieceMoved(oldPos, newPos, pieceName, color) {
     console.log(`[${color}] ${pieceName} : (${oldPos.x}, ${oldPos.y}) -> (${newPos.x}, ${newPos.y})`)
+
+    if (COLOROPP === color) {
+        const pieces = getBoard()
+        const bestMove = getBestMove(COLOR, pieces)
+        console.log(bestMove)
+    }
 }
 
-getBestMove()
+function getBoard() {
+    const tileSize = document.getElementsByTagName('cg-container')[0].clientWidth / 8;
+    const boardDOM = document.getElementsByTagName('cg-board')[0]
+    const piecesDOM = boardDOM.getElementsByTagName('piece');
+
+    const pieces = {}
+
+    for (let i = 0; i < piecesDOM.length; i++) {
+        let piececode = piecesDOM.item(i).classList[1][0];
+
+        if (piecesDOM.item(i).classList[1] === "knight") piececode = "n";
+        if (piecesDOM.item(i).classList.contains('white')) piececode = piececode.toUpperCase()
+
+        if (COLOR === "white") {
+            pieces[
+                String.fromCharCode("A".charCodeAt(0) + parseInt(piecesDOM.item(i).getAttribute('x'))/tileSize) +
+                (8 - parseInt(piecesDOM.item(i).getAttribute('y'))/tileSize)
+            ] = piececode
+        } else {
+            // the board is reversed if you are playing the blacks
+            pieces[
+                String.fromCharCode("H".charCodeAt(0) - parseInt(piecesDOM.item(i).getAttribute('x'))/tileSize) +
+                (parseInt(piecesDOM.item(i).getAttribute('y'))/tileSize + 1)
+            ] = piececode
+        }
+    }
+
+    return pieces
+}
